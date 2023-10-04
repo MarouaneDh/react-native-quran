@@ -1,4 +1,4 @@
-package com.quran;
+package com.quranmdh;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

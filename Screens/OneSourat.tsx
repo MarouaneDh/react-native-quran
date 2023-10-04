@@ -15,14 +15,15 @@ import Sourates from '../data.json'
 
 import axios from 'axios'
 
-function OneSourat() {
+function OneSourat(props: any) {
     const [data, setData] = useState([])
     const [lang, setLang] = useState('FR')
     const [loading, setLoading] = useState(false)
-    const [sourat, setSourat] = useState(1)
-    const [modalVisible, setModalVisible] = useState(false);
-    const [modalId, setModalId] = useState(-1)
     const [audioState, setAudioState] = useState('stopped')
+
+    const id = props.route.params.id
+
+    const [sourat, setSourat] = useState(id)
 
     const playSound = async () => {
         try {
@@ -122,25 +123,15 @@ function OneSourat() {
         }
     }
 
-    const closeModal = () => {
-        setModalVisible(false)
-        setModalId(-1)
-    }
-
-    const openModal = (id: any) => {
-        let val = +id - 1
-        setModalId(val)
-    }
-
     const buttons = () => {
         return (
             <View style={styles.langBloc}>
                 <Button disabled={sourat === 1} onPress={() => prev()} title='prev' />
-                <Button color={lang === 'FR' ? "#747474" : "#2196F3"} onPress={() => setLang('FR')} title='FR' />
-                <Button color={lang === 'EN' ? "#747474" : "#2196F3"} onPress={() => setLang('EN')} title='EN' />
-                <Button color={lang === 'ES' ? "#747474" : "#2196F3"} onPress={() => setLang('ES')} title='ES' />
-                <Button color={lang === 'PT' ? "#747474" : "#2196F3"} onPress={() => setLang('PT')} title='PT' />
-                <Button color={lang === 'JA' ? "#747474" : "#2196F3"} onPress={() => setLang('JA')} title='JA' />
+                <Button color={lang === 'FR' ? "#32e500" : "#2196F3"} onPress={() => setLang('FR')} title='FR' />
+                <Button color={lang === 'EN' ? "#32e500" : "#2196F3"} onPress={() => setLang('EN')} title='EN' />
+                <Button color={lang === 'ES' ? "#32e500" : "#2196F3"} onPress={() => setLang('ES')} title='ES' />
+                <Button color={lang === 'PT' ? "#32e500" : "#2196F3"} onPress={() => setLang('PT')} title='PT' />
+                <Button color={lang === 'JA' ? "#32e500" : "#2196F3"} onPress={() => setLang('JA')} title='JA' />
                 <Button disabled={sourat === 114} onPress={() => next()} title='next' />
             </View>
         )
@@ -149,12 +140,6 @@ function OneSourat() {
     useEffect(() => {
         getData();
     }, [lang, sourat]);
-
-    useEffect(() => {
-        if (modalId !== -1) {
-            setModalVisible(true)
-        }
-    }, [modalId])
 
     return (
         loading ?
@@ -165,13 +150,15 @@ function OneSourat() {
             <SafeAreaView style={styles.container}>
                 <StatusBar hidden />
                 {buttons()}
-                <ScrollView>
+                <View style={styles.playBtns}>
                     {
                         audioState === 'paused' || audioState === 'stopped' ?
                             <Button title='Play' color="#2196F3" onPress={() => playSound()} /> :
                             <Button title='Pause' color="#ffbf00" onPress={() => pausePlayback()} />
                     }
                     <Button title='Stop' color="#ff0042" onPress={() => stopPlayback()} />
+                </View>
+                <ScrollView>
                     <Text style={styles.title}>{Sourates?.data[sourat - 1].name} ({Sourates?.data[sourat - 1].transliteration})</Text>
                     <View style={styles.sectionContainer}>
                         {
@@ -179,6 +166,7 @@ function OneSourat() {
                                 return <View style={styles.bloc} key={el.id}>
                                     <Text style={styles.aya}>{el.arabic_text}</Text>
                                     <Text style={styles.ayaTranslation}>{el.translation}</Text>
+                                    <Text style={styles.ayaTranslation}>{el.footnotes}</Text>
                                 </View>
                             })
                         }
@@ -192,29 +180,16 @@ const styles = StyleSheet.create({
     button: {
         borderRadius: 20,
         padding: 10,
-        elevation: 2,
     },
-    buttonOpen: {
-        backgroundColor: '#F194FF',
-    },
-    buttonClose: {
-        backgroundColor: '#2196F3',
+    playBtns: {
+        display: 'flex',
+        flexDirection: 'row',
+        marginBottom: 5
     },
     textStyle: {
         color: 'white',
         fontWeight: 'bold',
         textAlign: 'center',
-    },
-    modalText: {
-        marginBottom: 15,
-        textAlign: 'center',
-    },
-    textModal: {
-        display: 'flex',
-        justifyContent: 'space-between',
-    },
-    scrollModal: {
-        height: '100%'
     },
     centeredView: {
         flex: 1,
@@ -222,27 +197,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 22,
     },
-    modalView: {
-        margin: 20,
-        backgroundColor: 'white',
-        borderRadius: 20,
-        padding: 20,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-    },
     container: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '100%',
-        paddingVertical: 25
+        height: '99%',
+        paddingBottom: 25,
+        paddingTop: 10,
+        borderBlockColor: '#CFAA03',
+        borderWidth: 3,
+        margin: 3,
+        borderRadius: 8
     },
     title: {
         fontSize: 32,
@@ -258,7 +223,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-        paddingVertical: 10,
+        paddingBottom: 10,
         width: '100%'
     },
     lang: {

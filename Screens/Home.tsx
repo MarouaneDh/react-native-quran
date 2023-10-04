@@ -1,20 +1,34 @@
-import React from 'react';
-import { Pressable, SafeAreaView, StyleSheet, Text, View, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Pressable, SafeAreaView, StyleSheet, Text, View, ScrollView, Image } from 'react-native';
 import Sourates from '../data.json';
+const bg = "../assets/circle.png"
 
-function Home() {
+function Home({ navigation }) {
+    const [loading, setLoading] = useState(true)
     const data = Sourates.data;
 
     const oneSourat = (item: any) => {
         return (
-            <Pressable style={styles.soura} key={item.id}>
+            <Pressable onPress={() => navigation.navigate('Soura', { id: item.id })} style={styles.soura} key={item.id}>
                 <Text style={styles.text}>{item.name}</Text>
+                <Image
+                    style={styles.img}
+                    source={require(bg)}
+                    alt={item.name}
+                />
             </Pressable>
         );
     };
 
+    useEffect(() => {
+        setTimeout(() => {
+            setLoading(false)
+        }, 2000);
+    }, [])
+
+
     return (
-        <SafeAreaView>
+        !loading && <SafeAreaView style={styles.container}>
             <ScrollView>
                 <View style={styles.list}>
                     {
@@ -31,25 +45,36 @@ function Home() {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        borderBlockColor: '#CFAA03',
+        borderWidth: 3,
+        margin: 3,
+        borderRadius: 8
+    },
     list: {
         display: 'flex',
         flexDirection: 'row',
-        flexWrap: 'wrap'
+        flexWrap: 'wrap',
+        justifyContent: 'center'
     },
     soura: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '30%',
-        height: 40,
-        borderBlockColor: '#000',
-        borderWidth: 1.5,
-        borderRadius: 10,
-        margin: '1.5%',
+        width: 'auto',
+        height: 90,
+        marginVertical: '3%',
+        marginHorizontal: '1%',
     },
     text: {
-        fontSize: 20,
-        fontWeight: '600'
+        fontSize: 25,
+        fontWeight: '600',
+        position: 'absolute',
+        color: '#CFAA03'
+    },
+    img: {
+        width: 110,
+        height: 110
     }
 });
 
